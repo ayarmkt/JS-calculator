@@ -3,6 +3,7 @@ const calculation = document.querySelector('.calculation');
 const result = document.querySelector('.result');
 
 let lastTyped = [];
+let lastResult;
 
 buttons.forEach((btn) =>
   btn.addEventListener('click', function (e) {
@@ -12,10 +13,12 @@ buttons.forEach((btn) =>
     console.log(lastTyped);
 
     if (e.target.classList == 'symbol') {
-      calculation.textContent = lastTyped.join(' ');
+      calculation.textContent = lastTyped.join('');
       result.textContent = 0;
+      lastTyped = [];
+    } else if (e.target.classList == 'number') {
+      result.textContent = lastTyped.join('');
     } else {
-      result.textContent = e.target.textContent;
     }
   })
 );
