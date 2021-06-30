@@ -30,10 +30,31 @@ body {
     'output'
     'buttons'
     'buttons';
+  background-color: var(--black);
 }
 
 .output {
   grid-area: output;
+  display: grid;
+  grid-template-areas:
+    'calculation'
+    'result'
+    'result';
+  justify-content: flex-end;
+  text-align: end;
+  align-items: center;
+  color: white;
+}
+
+.calculation {
+  grid-area: calculation;
+  font-size: 5px;
+  font-size: 30px;
+}
+
+.result {
+  grid-area: result;
+  font-size: 50px;
 }
 
 .buttons {
@@ -43,12 +64,11 @@ body {
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(5, 1fr);
   grid-gap: 2%;
-  background-color: blue;
 }
 
 .buttons > * {
   border-radius: 50%;
-  font-size: 20px;
+  font-size: 30px;
   border: none;
   cursor: pointer;
   text-align: center;
@@ -69,6 +89,6 @@ body {
   color: white;
 }
 
-.zero {
+#zero {
   grid-column: span 2;
 }
