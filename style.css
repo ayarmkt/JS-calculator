@@ -22,56 +22,59 @@ body {
 }
 
 .calculator {
-  height: 600px;
+  min-height: 600px;
   width: 400px;
-  background-color: aqua;
+  /*min-height: 100vh;*/
   display: grid;
-  grid-template-areas:
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: minmax(150px, auto) repeat(5, 1fr);
+  background-color: var(--black);
+  padding: 5px;
+  /* grid-template-areas:
     'output'
     'buttons'
-    'buttons';
-  background-color: var(--black);
+    'buttons'; */
 }
 
 .output {
-  grid-area: output;
-  display: grid;
-  grid-template-areas:
+  max-width: 100%;
+  grid-column: 1 / -1;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  word-wrap: break-word;
+  word-break: break-all;
+  /* grid-area: output; */
+  /* display: grid; */
+  /* grid-template-areas:
     'calculation'
     'result'
-    'result';
-  justify-content: flex-end;
+    'result'; */
+  /* justify-content: flex-end;
   text-align: end;
-  align-items: center;
-  color: white;
+  align-items: center; */
 }
 
 .calculation {
-  grid-area: calculation;
   font-size: 5px;
   font-size: 30px;
+  /* grid-area: calculation; */
 }
 
 .result {
-  grid-area: result;
   font-size: 50px;
+  /* grid-area: result; */
 }
 
-.buttons {
-  grid-area: buttons;
-  padding: 2%;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(5, 1fr);
-  grid-gap: 2%;
-}
-
-.buttons > * {
+button {
   border-radius: 50%;
-  font-size: 30px;
+  font-size: 40px;
   border: none;
   cursor: pointer;
   text-align: center;
+  margin: 5px;
 }
 
 .function {
@@ -84,13 +87,13 @@ body {
   background-color: white;
 }
 
-.symbol {
+.operator {
   background-color: var(--orange);
   color: white;
 }
 
-.symbol:active,
-.symbol:hover {
+.operator:active,
+.operator:hover {
   background-color: white;
   color: var(--orange);
 }
