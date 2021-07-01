@@ -79,14 +79,30 @@ body {
   color: var(--black);
 }
 
+.function:active,
+.function:hover {
+  background-color: white;
+}
+
 .symbol {
   background-color: var(--orange);
   color: white;
 }
 
+.symbol:active,
+.symbol:hover {
+  background-color: white;
+  color: var(--orange);
+}
+
 .number {
   background-color: var(--darkgray);
   color: white;
+}
+
+.number:active,
+.number:hover {
+  background-color: var(--lightgray);
 }
 
 #zero {
