@@ -3,28 +3,45 @@ const calculation = document.querySelector('.calculation');
 const result = document.querySelector('.result');
 
 let lastTyped;
-//let lastResult;
+let calcResult;
+let lastNum = '';
+let curNum = '';
 
 /////FUNCTION/////
 //
+
 const clear = function () {
   result.textContent = '0';
   calculation.textContent = '';
+
+  lastNum = '';
+  curNum = '';
 };
 
 const calculate = function (prev, cur) {
-  let calcResult;
+  if (calculation.textContent.includes('+'))
+    calcResult = Number(prev) + Number(cur);
+  if (calculation.textContent.includes('-'))
+    calcResult = Number(prev) - Number(cur);
+  if (calculation.textContent.includes('÷'))
+    calcResult = Number(prev) / Number(cur);
+  if (calculation.textContent.includes('×'))
+    calcResult = Number(prev) * Number(cur);
+};
 
-  //no prev
-  if (e.target.textContent === '+') calcResult = prev + cur;
-  if (e.target.textContent === '-') calcResult = prev - cur;
-  if (e.target.textContent === '÷') calcResult = prev / cur;
-  if (e.target.textContent === '×') calcResult = prev * cur;
+const displayResults = function (res) {
+  result.textContent = res.toFixed(8);
+  calculation.textContent = '';
+};
+
+const displayProcessResult = function (res, cur) {
+  result.textContent = '';
+  calculation.textContent = res + cur;
 };
 
 const displayNumber = function (cur) {
   //if there's no previous number(if string zero is inside)
-  if (result.textContent === '0' || lastTyped !== 'number') {
+  if (result.textContent === '0' || lastTyped.classList.value !== 'number') {
     result.textContent = cur.textContent;
   } else {
     result.textContent += cur.textContent;
@@ -32,29 +49,18 @@ const displayNumber = function (cur) {
 };
 
 const displayOperator = function (cur) {
-  if (cur.textContent === '=') {
-    //result.textContent = calculationresult;
-  } else {
-    calculation.textContent = result.textContent + cur.textContent;
-    result.textContent = '';
-  }
+  calculation.textContent = result.textContent + cur.textContent;
+  result.textContent = '';
 };
 
 const plusMinus = function () {
-  //if previous button is only a number
   if (lastTyped.classList.value === 'number' || lastTyped.id === 'plusminus') {
-    if (result.textContent.includes('-')) {
-      result.textContent = '-' + result.textContent;
-    } else {
-      result.textContent;
-    }
+    result.textContent = Number(result.textContent) * -1;
   }
-  console.log('fired plusminus');
 };
 
 const percentage = function () {
-  //if previous button is only a number
-  result.textContent = parseInt(result.textContent) / 100;
+  result.textContent = Number(result.textContent) / 100;
 };
 
 /////EVENT/////
@@ -63,38 +69,46 @@ window.addEventListener('DOMContentLoaded', clear);
 
 buttons.forEach((btn) =>
   btn.addEventListener('click', function (e) {
-    console.log(e.target);
-    console.log(typeof e.target.classList.value);
-    console.log(e.target.textContent);
-
-    const keyType = e.target.classList.value;
-    const keyId = e.target.id;
+    const key = e.target;
+    const keyType = key.classList.value;
+    const keyId = key.id;
 
     //if number
     if (keyType === 'number') {
-      displayNumber(e.target);
+      displayNumber(key);
+      curNum += key.textContent;
     }
 
-    //if it's operator
+    //if it's operator except =
     if (keyType === 'operator') {
-      displayOperator(e.target);
+      //if it's =
+      if (e.target.textContent === '=') {
+        calculate(lastNum, curNum);
+        displayResults(calcResult);
+        lastNum = '';
+        curNum = '';
+      } else if (calculation.textContent !== '') {
+        //if other than = && calculation exists
+        displayProcessResult(calcResult, curNum);
+      } else {
+        displayOperator(key);
+        lastNum = curNum;
+        curNum = '';
+      }
     }
 
-    //if it's ac
-    if (keyId == 'ac') {
+    if (keyId === 'ac') {
       clear();
     }
 
-    //if its +-
-    if (keyId == 'plusminus') {
+    if (keyId === 'plusminus') {
       plusMinus();
     }
-    //if its %
+
     if (keyId == 'percentage') {
       percentage();
-      console.log('fired percentage');
     }
 
-    lastTyped = e.target;
+    lastTyped = key;
   })
 );
