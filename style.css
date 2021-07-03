@@ -75,6 +75,17 @@ button {
   cursor: pointer;
   text-align: center;
   margin: 5px;
+  background-color: var(--darkgray);
+  color: white;
+}
+
+button:active,
+button:hover {
+  background-color: var(--lightgray);
+}
+
+#span2 {
+  grid-column: span 2;
 }
 
 .function {
@@ -96,18 +107,4 @@ button {
 .operator:hover {
   background-color: white;
   color: var(--orange);
-}
-
-.number {
-  background-color: var(--darkgray);
-  color: white;
-}
-
-.number:active,
-.number:hover {
-  background-color: var(--lightgray);
-}
-
-#zero {
-  grid-column: span 2;
 }
