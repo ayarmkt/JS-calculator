@@ -96,9 +96,8 @@ button:hover {
 .operator:active,
 .operator-equal:active,
 .operator:hover,
-.operator-equal:hover {
+.operator-equal:hover,
+.operator.isSelected {
   background-color: white;
   color: var(--orange);
 }
-
-/* .operator.isSelected */

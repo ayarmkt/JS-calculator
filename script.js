@@ -1,6 +1,6 @@
 const calculator = document.querySelector('.calculator');
 const buttons = calculator.querySelector('.buttons');
-
+const operators = calculator.querySelectorAll('.operator');
 const process = calculator.querySelector('.process');
 const result = calculator.querySelector('.result');
 
@@ -10,17 +10,26 @@ let firstNum = 0;
 let secondNum = 0;
 let sum = 0;
 
-//NEED TO FIX STYLE FOR BUTTON HOLD LATER
-//change color to hold button, also when you press other operators the button will change
-//FIX RESULT NUMBER LENGTH
-//after equal you decide to continue the calculation with other operations
-//when i do 0.3-0.2 the result get super big
-//smthg wrong when i do 6*9*
-
+//
 /////HELPER FUNCTION/////
 //
+const onlySubtractAdd = function (key) {
+  if (
+    key &&
+    (key.dataset.action === 'subtract' || key.dataset.action === 'add')
+  ) {
+    firstNum = result.textContent;
+    process.textContent = `${firstNum} ${key.textContent}`;
+    result.textContent = '';
+  }
+};
 
-const displayInProcess = function (key) {
+const displayFromResultToProcess = function (key) {
+  displayProcess(key);
+  result.textContent = '';
+};
+
+const displayProcess = function (key) {
   process.textContent = `${firstNum} ${key.textContent}`;
 };
 
@@ -29,87 +38,68 @@ const resetVariables = function () {
   sum = 0;
 };
 
-const emptyResult = function () {
-  result.textContent = '';
-};
-
-const onlySubtractAdd = function (key) {
-  if (key.dataset.action === 'subtract' || key.dataset.action === 'add') {
-    console.log('you can only subtract or add');
-    firstNum = result.textContent;
-    displayInProcess(key);
-    emptyResult();
-  } else {
-    console.log('cant type this key');
-  }
-};
-
+//
 /////FUNCTION/////
 //
-
 const calculate = function (key, firstNum) {
   secondNum = result.textContent;
-  console.log(firstNum, secondNum);
+
   switch (key && key.dataset.action) {
     case 'add':
-      sum = parseFloat(firstNum) + parseFloat(secondNum);
+      sum = (parseFloat(firstNum) * 10 + parseFloat(secondNum) * 10) / 10;
       break;
     case 'subtract':
-      sum = parseFloat(firstNum) - parseFloat(secondNum);
+      sum = (parseFloat(firstNum) * 10 - parseFloat(secondNum) * 10) / 10;
       break;
     case 'multiply':
-      sum = parseFloat(firstNum) * parseFloat(secondNum);
+      sum = parseFloat(
+        (parseFloat(firstNum) * parseFloat(secondNum)).toFixed(12)
+      );
       break;
     case 'divide':
-      sum = parseFloat(firstNum) / parseFloat(secondNum);
+      sum = parseFloat(
+        (parseFloat(firstNum) / parseFloat(secondNum)).toFixed(12)
+      );
       break;
-      console.log(sum);
-
-      firstNum = sum === '' ? '0' : sum;
   }
 };
 
 const handleOperator = function (key, prevKey) {
-  console.log('function working');
-  console.log(prevKey);
+  if (!prevKey) onlySubtractAdd(key);
 
-  if (!prevKey) {
+  if (prevKey.dataset.action === 'calculate') {
+    firstNum = result.textContent;
+    displayFromResultToProcess(key);
+    resetVariables();
+  }
+
+  if (prevKey.matches('.operator') && firstNum) {
+    prevKey.classList.remove('isSelected');
+    displayProcess(key);
+  }
+
+  if (prevKey.matches('.number') && !firstNum) {
+    firstNum = result.textContent;
+    displayFromResultToProcess(key);
+  }
+
+  if (
+    firstNum &&
+    result.textContent !== '' &&
+    prevKey.dataset.action !== 'calculate'
+  ) {
+    calculate(prevOperator, firstNum);
+    firstNum = sum;
+    displayFromResultToProcess(key);
+    resetVariables();
+  }
+
+  if (result.textContent === '0' && process.textContent === '') {
     onlySubtractAdd(key);
   }
 
-  if (prevKey) {
-    if (prevKey.matches('.operator') && firstNum) {
-      //change op
-      console.log('CHANGE OPERATOR');
-      displayInProcess(key);
-    } else if (prevKey.matches('.number') && !firstNum) {
-      console.log('FIRST NUMBER TYPED, WAITING FOR SECOND NUMBER');
-      firstNum = result.textContent;
-      displayInProcess(key);
-      emptyResult();
-      console.log(firstNum, secondNum);
-    } else if (
-      key.matches('.operator') ||
-      (prevKey.dataset.action ===
-        ('calculate' || 'plusminus' || 'percentage') &&
-        firstNum)
-    ) {
-      console.log('NEED TO SUM, AND MAKE THE SUM THE FIRST');
-      calculate(prevOperator, firstNum);
-      firstNum = result.textContent;
-      console.log(firstNum);
-      displayInProcess(key);
-      resetVariables();
-      emptyResult();
-    } else if (result.textContent === '' || process.textContent === '') {
-      onlySubtractAdd(key);
-    } else {
-      console.log('smthgs wrong');
-    }
-  }
-
   prevOperator = key;
-  //key.classList.add('isSelected');
+  key.classList.add('isSelected');
 };
 
 const clear = function () {
@@ -120,7 +110,7 @@ const clear = function () {
   sum = 0;
   firstNum = 0;
   secondNum = 0;
-  console.log(firstNum, secondNum);
+  operators.forEach((op) => op.classList.remove('isSelected'));
 };
 
 const plusMinus = function () {
@@ -129,12 +119,15 @@ const plusMinus = function () {
 
 const calcPercentage = function () {
   if (result.textContent !== '0') {
-    result.textContent = parseFloat(result.textContent) / 100;
+    result.textContent = parseFloat(
+      (parseFloat(result.textContent) / 100).toFixed(12)
+    );
   }
 };
 
 const displayDecimal = function (key) {
   if (prevKey && prevKey.dataset.action === 'decimal') return;
+  if (prevKey && prevKey.dataset.action === 'calculate') clear();
   if (result.textContent === '') {
     result.textContent = `0${key.textContent}`;
   } else {
@@ -143,29 +136,24 @@ const displayDecimal = function (key) {
 };
 
 const displayNumber = function (key) {
+  if (prevKey && prevKey.dataset.action === 'calculate') clear();
   if (result.textContent === '0') {
-    console.log(result.textContent);
-    console.log('there is a zero');
     result.textContent = key.textContent;
-    console.log(result.textContent);
   } else {
-    console.log(result.textContent);
-    console.log('there is a number');
     result.textContent += key.textContent;
   }
 };
 
+//
 /////EVENT/////
 //
-//window.addEventListener('DOMContentLoaded', clear);
+window.addEventListener('DOMContentLoaded', clear);
+
 buttons.addEventListener('click', function (e) {
   const key = e.target;
   const action = key.dataset.action;
 
   if (!key.matches('button')) return;
-  //if ((prevKey.dataset.action = 'calculate')) clear();
-
-  if (prevKey && prevKey.dataset.action === 'calculate') clear();
 
   switch (action) {
     case 'add':
@@ -176,19 +164,19 @@ buttons.addEventListener('click', function (e) {
       break;
 
     case 'calculate':
-      //its equal
-      console.log(`CALCULATION DONE`);
       calculate(prevOperator, firstNum);
-      console.log(firstNum, secondNum);
-      console.log(sum);
+      result.textContent = sum;
       process.textContent = '';
       sum = '';
-      //also want to change the operator color style back to default
+
+      if (prevKey && prevKey.matches('.operator')) {
+        result.textContent = firstNum;
+        prevKey.classList.remove('isSelected');
+      }
       break;
 
     case 'clear':
       clear();
-      //also want to change the operator color style back to default
       break;
 
     case 'plusminus':
@@ -205,7 +193,8 @@ buttons.addEventListener('click', function (e) {
 
     default:
       displayNumber(key);
-    //also want to change the operator color style back to default
+      if (prevKey && prevKey.matches('.operator'))
+        prevKey.classList.remove('isSelected');
   }
 
   prevKey = key;
