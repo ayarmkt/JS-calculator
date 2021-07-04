@@ -87,14 +87,17 @@ button:hover {
   background-color: white;
 }
 
-.operator {
+.operator,
+.operator-equal {
   background-color: var(--orange);
   color: white;
 }
 
 .operator:active,
+.operator-equal:active,
 .operator:hover,
-.operator .isSelected {
+.operator-equal:hover,
+.operator.isSelected {
   background-color: white;
   color: var(--orange);
 }
