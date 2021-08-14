@@ -1,4 +1,4 @@
 # JS-calculator
-A calculator made with HTML, CSS, JavaScript.
+Created a calculator using HTML, CSS, and JavaScript.
 
 Link for Demo: https://ayarmkt.github.io/JS-calculator/
