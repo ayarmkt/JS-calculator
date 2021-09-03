@@ -1,4 +1,4 @@
 # JS-calculator
-A calculator using JTML, CSS, JavaScript for practice.
+Created a calculator using HTML, CSS, and JavaScript.
 
-Link for Demo: https://ayarmkt.github.io/JS-calculator/
+Project Link: https://ayarmkt.github.io/JS-calculator/
