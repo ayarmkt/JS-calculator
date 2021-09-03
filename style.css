@@ -1,6 +1,6 @@
 :root {
   --black: rgb(29, 27, 27);
-  --orange: rgb(231, 145, 5);
+  --pink: rgb(214, 20, 240);
   --lightgray: rgb(172, 167, 167);
   --darkgray: rgb(58, 56, 56);
 }
@@ -89,7 +89,7 @@ button:hover {
 
 .operator,
 .operator-equal {
-  background-color: var(--orange);
+  background-color: var(--pink);
   color: white;
 }
 
@@ -99,7 +99,7 @@ button:hover {
 .operator-equal:hover,
 .operator.isSelected {
   background-color: white;
-  color: var(--orange);
+  color: var(--pink);
 }
 
 /* MOBILES */
