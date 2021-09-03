@@ -58,7 +58,8 @@ body {
 }
 
 button {
-  border-radius: 50%;
+  /* border-radius: 50%; */
+  border-radius: 5px;
   font-size: 40px;
   border: none;
   cursor: pointer;
@@ -87,8 +88,7 @@ button:hover {
   background-color: white;
 }
 
-.operator,
-.operator-equal {
+.operator {
   background-color: var(--pink);
   color: white;
 }
@@ -96,10 +96,19 @@ button:hover {
 .operator:active,
 .operator-equal:active,
 .operator:hover,
-.operator-equal:hover,
 .operator.isSelected {
   background-color: white;
   color: var(--pink);
+}
+
+.operator-equal {
+  background-color: white;
+  color: var(--pink);
+}
+
+.operator-equal:hover {
+  background-color: var(--pink);
+  color: white;
 }
 
 /* MOBILES */
