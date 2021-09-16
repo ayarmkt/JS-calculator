@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a weather app with a minimalist design that shows the current weather around the world.<br>The weather data is fetched from [OpenWeatherMap](https://openweathermap.org/) API.
+A calculator made with Vanilla JavaScript. The calculator shows not only the result but also the process of calculation. It also supports +/- and % calculation.
 
 ## Tech Stack
 Tech Stack: HTML | CSS | JavaScript<br>
@@ -13,7 +13,7 @@ Platform: GitHub Pages
 **Live Site:** https://ayarmkt.github.io/JS-calculator/
 
 **Calculation**<br>
-This calculator allows continuous calculation even after pressing "=".
+The calculator displays the calculation process and the result. This calculator allows continuous calculation even after pressing "=".
 
 <img src="https://user-images.githubusercontent.com/82935527/133568341-667a7153-a3cb-4e33-bda9-5807764db2f7.gif" alt="calculation" title="calculation" width="40%" height="40%">
 
