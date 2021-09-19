@@ -2,7 +2,7 @@
 
 ## Overview
 
-A calculator made with Vanilla JavaScript. The calculator displays both the calculation process and the result. It also supports +/- and % calculation.
+A calculator made with Vanilla JavaScript. The calculator displays both the calculation process and the result. Plus/minus button and percentage button are provided.
 
 ## Tech Stack
 Tech Stack: HTML | CSS | JavaScript<br>
