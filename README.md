@@ -2,10 +2,10 @@
 
 ## Overview
 
-A calculator made with JavaScript. The calculator displays both the calculation process and the result. It has a plus/minus button and a percentage button.
+A calculator which displays both the calculation process and the result. Features include plus/minus and percentage buttons.
 
 ## Tech Stack
-Tech Stack: HTML | CSS | JavaScript<br>
+Tech Stack: HTML | CSS | Vanilla JavaScript<br>
 Platform: GitHub Pages
 
 ## Final Product
