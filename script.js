@@ -41,10 +41,11 @@ const resetVariables = function () {
 //
 /////FUNCTION/////
 //
-const calculate = function (key, firstNum) {
-  secondNum = result.textContent;
-
-  switch (key && key.dataset.action) {
+export const calculate = function (keyAction, firstNum, secondNum) {
+  //secondNum = result.textContent;
+  //console.log(key);
+  //switch (key && key.dataset.action)
+  switch (keyAction) {
     case 'add':
       sum = (parseFloat(firstNum) * 10 + parseFloat(secondNum) * 10) / 10;
       break;
@@ -88,7 +89,8 @@ const handleOperator = function (key, prevKey) {
     result.textContent !== '' &&
     prevKey.dataset.action !== 'calculate'
   ) {
-    calculate(prevOperator, firstNum);
+    if (key)
+      calculate(prevOperator.dataset.action, firstNum, result.textContent);
     firstNum = sum;
     displayFromResultToProcess(key);
     resetVariables();
@@ -164,7 +166,9 @@ buttons.addEventListener('click', function (e) {
       break;
 
     case 'calculate':
-      calculate(prevOperator, firstNum);
+      if (key)
+        calculate(prevOperator.dataset.action, firstNum, result.textContent);
+      console.log(prevOperator.dataset.action);
       result.textContent = sum;
       process.textContent = '';
       sum = '';
