@@ -25,8 +25,8 @@ let storedNum = 0;
 const clear = function () {
   process.textContent = '';
   result.textContent = '0';
-  prevKey;
-  prevOperator;
+  prevKey = '';
+  prevOperator = '';
   storedNum = 0;
   operators.forEach((op) => op.classList.remove('isSelected'));
 };
@@ -47,29 +47,11 @@ buttons.addEventListener('click', function (e) {
     case 'subtract':
     case 'multiply':
     case 'divide':
-      //If the first button is the operation key
-      if (!prevKey || prevKey.dataset.action === 'clear') {
-        //if the first key is × or ÷, noting changes.
-        if (curAction === 'multiply' || curAction === 'divide') return;
-
-        //if the first key is + or -, calculation starts with 0 at the beginning
-        process.textContent = displayProcess(
-          result.textContent,
-          currentKey.textContent
-        );
-        result.textContent = '';
-      }
-
-      //If the operator is changed, the changed operator is displayed in the process
-      if (prevKey && prevKey.matches('.operator') && storedNum) {
-        process.textContent = displayProcess(storedNum, currentKey.textContent);
-        prevKey.classList.remove('isSelected');
-      }
-
-      //If the previous key was either the = button or a first number, continue the calculation with the result moved to the process
+      //START NEW CALCULATION: If the previous key was either the = button, clear button, or a first number, continue the calculation with the result moved to the process
       if (
         prevKey &&
         (prevKey.dataset.action === 'calculate' ||
+          prevKey.dataset.action === 'clear' ||
           (prevKey.matches('.number') && !storedNum))
       ) {
         storedNum = result.textContent;
@@ -80,11 +62,12 @@ buttons.addEventListener('click', function (e) {
         result.textContent = '';
       }
 
-      //If the process and result has a value (2 numbers are already given), continue the calculation with the result displayed in the process
+      //CONTINUE CALCULATION: If the result has a stored value, continue the calculation with the result displayed in the process
       if (
         storedNum &&
-        result.textContent !== '' &&
-        prevKey.dataset.action !== 'calculate'
+        prevOperator &&
+        result.textContent &&
+        prevKey.matches('.number')
       ) {
         storedNum = calculate(
           prevOperator.dataset.action,
@@ -95,8 +78,62 @@ buttons.addEventListener('click', function (e) {
         result.textContent = '';
       }
 
+      //STARTING FROM OPERATION: if the first key is × or ÷, noting changes.
+      if (
+        (!prevKey || prevKey.dataset.action === 'clear') &&
+        (curAction === 'multiply' || curAction === 'divide')
+      ) {
+        return;
+      }
+
+      //STARTING FROM OPERATION: if the first key is + or -, calculation starts with 0 at the beginning
+      if (
+        (!prevKey || prevKey.dataset.action === 'clear') &&
+        (curAction === 'subtract' || curAction === 'add')
+      ) {
+        process.textContent = displayProcess(
+          result.textContent,
+          currentKey.textContent
+        );
+        result.textContent = '';
+      }
+
+      //OPERATION CHANGE: If the operator is changed, the changed operator is displayed in the process
+      if (prevKey && prevKey.matches('.operator')) {
+        process.textContent = displayProcess(storedNum, currentKey.textContent);
+        prevKey.classList.remove('isSelected');
+      }
+
+      //FUNCTION BUTTON INVOLVED: if previous key is +/- or % and changes the first number, continue calculation with the result displaying in the process
+      if (
+        //prevKey &&
+        !storedNum &&
+        !process.textContent &&
+        (prevKey.dataset.action === 'plusminus' ||
+          prevKey.dataset.action === 'percentage')
+      ) {
+        storedNum = result.textContent;
+        process.textContent = displayProcess(storedNum, currentKey.textContent);
+        result.textContent = '';
+      }
+
+      //FUNCTION BUTTON INVOLVED: if previous key is +/- or % and changes the second number, then continue the result with displaying in the process
+      if (
+        storedNum &&
+        prevOperator &&
+        process.textContent &&
+        (prevKey.dataset.action === 'plusminus' ||
+          prevKey.dataset.action === 'percentage')
+      ) {
+        storedNum = calculate(
+          prevOperator.dataset.action,
+          storedNum,
+          result.textContent
+        );
+        process.textContent = displayProcess(storedNum, currentKey.textContent);
+        result.textContent = '';
+      }
       prevOperator = currentKey;
-      prevKey = currentKey;
       currentKey.classList.add('isSelected');
       break;
 
@@ -120,28 +157,25 @@ buttons.addEventListener('click', function (e) {
       }
 
       if (prevKey) prevKey.classList.remove('isSelected');
-      prevKey = currentKey;
       break;
 
     case 'clear':
       clear();
-      prevKey = currentKey;
       break;
 
     case 'plusminus':
+      if (result.textContent === '') return;
       result.textContent = plusMinus(result.textContent);
-      prevKey = currentKey;
       break;
 
     case 'percentage':
+      if (result.textContent === '') return;
       result.textContent = calcPercentage(result.textContent);
-      prevKey = currentKey;
       break;
 
     case 'decimal':
       if (prevKey && prevKey.dataset.action === 'calculate') clear();
       result.textContent = displayDecimal(result.textContent);
-      prevKey = currentKey;
       break;
 
     default:
@@ -154,7 +188,6 @@ buttons.addEventListener('click', function (e) {
       );
       if (prevKey && prevKey.matches('.operator'))
         prevKey.classList.remove('isSelected');
-      prevKey = currentKey;
   }
 
   prevKey = currentKey;
