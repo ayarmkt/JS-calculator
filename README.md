@@ -6,6 +6,7 @@ A calculator which displays both the calculation process and the result. Feature
 
 ## Tech Stack
 Tech Stack: HTML | CSS | Vanilla JavaScript<br>
+Testing: Jest<br>
 Platform: GitHub Pages
 
 ## Final Product
