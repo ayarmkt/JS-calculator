@@ -1,147 +1,34 @@
+import { calculate } from './functions/calculate/calculate.js';
+import {
+  calcPercentage,
+  plusMinus,
+} from './functions/functionKeys/functionKeys.js';
+import {
+  displayDecimal,
+  displayNumber,
+  displayProcess,
+} from './functions/display/displayFunction.js';
+
 const calculator = document.querySelector('.calculator');
 const buttons = calculator.querySelector('.buttons');
 const operators = calculator.querySelectorAll('.operator');
 const process = calculator.querySelector('.process');
 const result = calculator.querySelector('.result');
 
-let prevKey = '';
-let prevOperator = '';
-let firstNum = 0;
-let secondNum = 0;
-let sum = 0;
-
-//
-/////HELPER FUNCTION/////
-//
-const onlySubtractAdd = function (key) {
-  if (
-    key &&
-    (key.dataset.action === 'subtract' || key.dataset.action === 'add')
-  ) {
-    firstNum = result.textContent;
-    process.textContent = `${firstNum} ${key.textContent}`;
-    result.textContent = '';
-  }
-};
-
-const displayFromResultToProcess = function (key) {
-  displayProcess(key);
-  result.textContent = '';
-};
-
-const displayProcess = function (key) {
-  process.textContent = `${firstNum} ${key.textContent}`;
-};
-
-const resetVariables = function () {
-  secondNum = 0;
-  sum = 0;
-};
+let prevKey;
+let prevOperator;
+let storedNum = 0;
 
 //
 /////FUNCTION/////
 //
-const calculate = function (key, firstNum) {
-  secondNum = result.textContent;
-
-  switch (key && key.dataset.action) {
-    case 'add':
-      sum = (parseFloat(firstNum) * 10 + parseFloat(secondNum) * 10) / 10;
-      break;
-    case 'subtract':
-      sum = (parseFloat(firstNum) * 10 - parseFloat(secondNum) * 10) / 10;
-      break;
-    case 'multiply':
-      sum = parseFloat(
-        (parseFloat(firstNum) * parseFloat(secondNum)).toFixed(12)
-      );
-      break;
-    case 'divide':
-      sum = parseFloat(
-        (parseFloat(firstNum) / parseFloat(secondNum)).toFixed(12)
-      );
-      break;
-  }
-};
-
-const handleOperator = function (key, prevKey) {
-  if (!prevKey) onlySubtractAdd(key);
-
-  if (prevKey.dataset.action === 'calculate') {
-    firstNum = result.textContent;
-    displayFromResultToProcess(key);
-    resetVariables();
-  }
-
-  if (prevKey.matches('.operator') && firstNum) {
-    prevKey.classList.remove('isSelected');
-    displayProcess(key);
-  }
-
-  if (prevKey.matches('.number') && !firstNum) {
-    firstNum = result.textContent;
-    displayFromResultToProcess(key);
-  }
-
-  if (
-    firstNum &&
-    result.textContent !== '' &&
-    prevKey.dataset.action !== 'calculate'
-  ) {
-    calculate(prevOperator, firstNum);
-    firstNum = sum;
-    displayFromResultToProcess(key);
-    resetVariables();
-  }
-
-  if (result.textContent === '0' && process.textContent === '') {
-    onlySubtractAdd(key);
-  }
-
-  prevOperator = key;
-  key.classList.add('isSelected');
-};
-
 const clear = function () {
   process.textContent = '';
   result.textContent = '0';
-  prevKey = '';
-  prevOperator = '';
-  sum = 0;
-  firstNum = 0;
-  secondNum = 0;
+  prevKey;
+  prevOperator;
+  storedNum = 0;
   operators.forEach((op) => op.classList.remove('isSelected'));
-};
-
-const plusMinus = function () {
-  result.textContent = -parseFloat(result.textContent);
-};
-
-const calcPercentage = function () {
-  if (result.textContent !== '0') {
-    result.textContent = parseFloat(
-      (parseFloat(result.textContent) / 100).toFixed(12)
-    );
-  }
-};
-
-const displayDecimal = function (key) {
-  if (prevKey && prevKey.dataset.action === 'decimal') return;
-  if (prevKey && prevKey.dataset.action === 'calculate') clear();
-  if (result.textContent === '') {
-    result.textContent = `0${key.textContent}`;
-  } else {
-    result.textContent += key.textContent;
-  }
-};
-
-const displayNumber = function (key) {
-  if (prevKey && prevKey.dataset.action === 'calculate') clear();
-  if (result.textContent === '0') {
-    result.textContent = key.textContent;
-  } else {
-    result.textContent += key.textContent;
-  }
 };
 
 //
@@ -150,52 +37,125 @@ const displayNumber = function (key) {
 window.addEventListener('DOMContentLoaded', clear);
 
 buttons.addEventListener('click', function (e) {
-  const key = e.target;
-  const action = key.dataset.action;
+  //Get buttons
+  const currentKey = e.target;
+  if (!currentKey.matches('button')) return;
+  const curAction = currentKey.dataset.action;
 
-  if (!key.matches('button')) return;
-
-  switch (action) {
+  switch (curAction) {
     case 'add':
     case 'subtract':
     case 'multiply':
     case 'divide':
-      handleOperator(key, prevKey);
+      //If the first button is the operation key
+      if (!prevKey || prevKey.dataset.action === 'clear') {
+        //if the first key is × or ÷, noting changes.
+        if (curAction === 'multiply' || curAction === 'divide') return;
+
+        //if the first key is + or -, calculation starts with 0 at the beginning
+        process.textContent = displayProcess(
+          result.textContent,
+          currentKey.textContent
+        );
+        result.textContent = '';
+      }
+
+      //If the operator is changed, the changed operator is displayed in the process
+      if (prevKey && prevKey.matches('.operator') && storedNum) {
+        process.textContent = displayProcess(storedNum, currentKey.textContent);
+        prevKey.classList.remove('isSelected');
+      }
+
+      //If the previous key was either the = button or a first number, continue the calculation with the result moved to the process
+      if (
+        prevKey &&
+        (prevKey.dataset.action === 'calculate' ||
+          (prevKey.matches('.number') && !storedNum))
+      ) {
+        storedNum = result.textContent;
+        process.textContent = displayProcess(
+          result.textContent,
+          currentKey.textContent
+        );
+        result.textContent = '';
+      }
+
+      //If the process and result has a value (2 numbers are already given), continue the calculation with the result displayed in the process
+      if (
+        storedNum &&
+        result.textContent !== '' &&
+        prevKey.dataset.action !== 'calculate'
+      ) {
+        storedNum = calculate(
+          prevOperator.dataset.action,
+          storedNum,
+          result.textContent
+        );
+        process.textContent = displayProcess(storedNum, currentKey.textContent);
+        result.textContent = '';
+      }
+
+      prevOperator = currentKey;
+      prevKey = currentKey;
+      currentKey.classList.add('isSelected');
       break;
 
     case 'calculate':
-      calculate(prevOperator, firstNum);
-      result.textContent = sum;
-      process.textContent = '';
-      sum = '';
-
-      if (prevKey && prevKey.matches('.operator')) {
-        result.textContent = firstNum;
-        prevKey.classList.remove('isSelected');
+      //change operation to =
+      if (prevKey === prevOperator) {
+        result.textContent = storedNum;
+        process.textContent = '';
+      } else if (result.textContent !== '' && !storedNum) {
+        //only first value is in the result
+        result.textContent = result.textContent;
+      } else {
+        //ordinary calculation
+        storedNum = calculate(
+          prevOperator.dataset.action,
+          storedNum,
+          result.textContent
+        );
+        result.textContent = storedNum;
+        process.textContent = '';
       }
+
+      if (prevKey) prevKey.classList.remove('isSelected');
+      prevKey = currentKey;
       break;
 
     case 'clear':
       clear();
+      prevKey = currentKey;
       break;
 
     case 'plusminus':
-      plusMinus();
+      result.textContent = plusMinus(result.textContent);
+      prevKey = currentKey;
       break;
 
     case 'percentage':
-      calcPercentage();
+      result.textContent = calcPercentage(result.textContent);
+      prevKey = currentKey;
       break;
 
     case 'decimal':
-      displayDecimal(key);
+      if (prevKey && prevKey.dataset.action === 'calculate') clear();
+      result.textContent = displayDecimal(result.textContent);
+      prevKey = currentKey;
       break;
 
     default:
-      displayNumber(key);
+      if (prevKey && prevKey.dataset.action === 'calculate') {
+        clear();
+      }
+      result.textContent = displayNumber(
+        result.textContent,
+        currentKey.textContent
+      );
       if (prevKey && prevKey.matches('.operator'))
         prevKey.classList.remove('isSelected');
+      prevKey = currentKey;
   }
 
-  prevKey = key;
+  prevKey = currentKey;
 });
